@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emoclew — Manifesto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+:root {
+  --bg:          #0e0d0b;
+  --surface:     #141310;
+  --surface-2:   #1a1916;
+  --border:      rgba(255,255,255,0.07);
+  --text:        #e8e4dc;
+  --text-muted:  #8a8680;
+  --text-faint:  #4a4844;
+  --ember:       #e85d04;
+  --gold:        #f4a261;
+  --spark:       #ffd166;
+  --cyan:        #48cae4;
+  --nova:        #90e0ef;
+  --grad-fire:   linear-gradient(135deg, #e85d04 0%, #f4a261 40%, #ffd166 70%, #48cae4 100%);
+  --font-display: 'Barlow Condensed', sans-serif;
+  --font-body:    'Inter', sans-serif;
+  --content: 720px;
+  --transition: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 1rem 1.5rem;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: background var(--transition), border-color var(--transition);
+  border-bottom: 1px solid transparent;
+}
+nav.scrolled { background: rgba(14,13,11,0.88); backdrop-filter: blur(16px); border-color: var(--border); }
+.nav-logo { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; }
+.nav-logo-text {
+  font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; letter-spacing: 0.04em;
+  background: var(--grad-fire); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.nav-links { display: flex; align-items: center; gap: 0.75rem; }
+.nav-links a.nav-text {
+  color: var(--text-muted); text-decoration: none; font-size: 0.875rem; font-weight: 500;
+  transition: color var(--transition); padding: 0 0.75rem;
+}
+.nav-links a.nav-text:hover { color: var(--text); }
+.btn-nav {
+  background: transparent; border: 1px solid rgba(232,93,4,0.5); color: var(--gold);
+  padding: 0.5rem 1.25rem; border-radius: 9999px;
+  font-size: 0.875rem; font-weight: 600; font-family: var(--font-body);
+  cursor: pointer; text-decoration: none;
+  transition: background var(--transition), border-color var(--transition);
+}
+.btn-nav:hover { background: rgba(232,93,4,0.12); border-color: var(--ember); }
+.btn-nav-disabled {
+  background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-faint);
+  padding: 0.5rem 1.25rem; border-radius: 9999px;
+  font-size: 0.875rem; font-weight: 600; font-family: var(--font-body);
+  cursor: not-allowed; opacity: 0.5; position: relative;
+}
+.btn-nav-disabled::after {
+  content: 'Coming soon'; position: absolute; bottom: -2rem; left: 50%;
+  transform: translateX(-50%); background: var(--surface-2);
+  border: 1px solid var(--border); color: var(--text-muted);
+  font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 4px;
+  white-space: nowrap; opacity: 0; pointer-events: none;
+  transition: opacity var(--transition);
+}
+.btn-nav-disabled:hover::after { opacity: 1; }
+
+/* ── HERO ── */
+.manifesto-hero {
+  padding: 9rem 1.5rem 4rem;
+  border-bottom: 1px solid var(--border);
+  position: relative; overflow: hidden;
+}
+.manifesto-hero::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: var(--grad-fire); opacity: 0.6;
+}
+.hero-inner {
+  max-width: var(--content); margin: 0 auto;
+}
+.doc-type-label {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: rgba(232,93,4,0.1); border: 1px solid rgba(232,93,4,0.25);
+  color: var(--gold); padding: 0.35rem 0.9rem; border-radius: 9999px;
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+.manifesto-hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 7vw, 5.5rem);
+  font-weight: 800; line-height: 0.95; letter-spacing: -0.01em;
+  background: var(--grad-fire); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 1.5rem;
+}
+.manifesto-hero-sub {
+  font-size: 1.05rem; color: var(--text-muted); line-height: 1.75;
+  max-width: 580px; margin-bottom: 2rem;
+}
+.meta-row {
+  display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+}
+.meta-pill {
+  background: var(--surface-2); border: 1px solid var(--border);
+  color: var(--text-faint); padding: 0.3rem 0.85rem; border-radius: 9999px;
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase;
+}
+.meta-pill.live {
+  border-color: rgba(232,93,4,0.3); color: var(--ember);
+  background: rgba(232,93,4,0.08);
+}
+
+/* ── DOCUMENT BODY ── */
+.manifesto-body {
+  max-width: var(--content); margin: 0 auto;
+  padding: 4rem 1.5rem 6rem;
+}
+
+/* Part divider */
+.part-divider {
+  display: flex; align-items: center; gap: 1rem;
+  margin: 4rem 0 2rem;
+}
+.part-divider-line {
+  flex: 1; height: 1px; background: var(--border);
+}
+.part-label {
+  font-family: var(--font-display); font-size: 0.65rem; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--ember);
+  white-space: nowrap;
+}
+
+/* Section heading */
+.section-heading {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 800; line-height: 1.05; letter-spacing: -0.01em;
+  color: var(--text); margin-bottom: 1.5rem;
+}
+.section-heading span {
+  background: var(--grad-fire); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+
+/* Sub-heading */
+.sub-heading {
+  font-family: var(--font-display); font-size: 1.1rem; font-weight: 700;
+  letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted);
+  margin: 2.5rem 0 0.75rem;
+}
+
+/* Body text */
+.body-text {
+  font-size: 1.05rem; color: var(--text-muted); line-height: 1.85;
+  margin-bottom: 1.2rem;
+}
+.body-text strong { color: var(--text); font-weight: 600; }
+
+/* Pull quote */
+.pull-quote {
+  border-left: 3px solid var(--ember);
+  padding: 1.25rem 0 1.25rem 1.75rem;
+  margin: 2.5rem 0;
+}
+.pull-quote p {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 3vw, 1.9rem);
+  font-weight: 700; line-height: 1.3; color: var(--text);
+  font-style: italic;
+}
+.pull-quote p span {
+  background: var(--grad-fire); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+
+/* Convergence block — the three lines */
+.convergence {
+  background: var(--surface);
+  border: 1px solid var(--border); border-radius: 0.75rem;
+  padding: 2rem 2.25rem; margin: 2rem 0;
+}
+.convergence-item {
+  display: flex; align-items: baseline; gap: 0.75rem;
+  padding: 0.6rem 0; border-bottom: 1px solid var(--border);
+}
+.convergence-item:last-child { border-bottom: none; }
+.convergence-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--ember); flex-shrink: 0; margin-top: 2px;
+}
+.convergence-text { font-size: 1rem; color: var(--text); line-height: 1.6; }
+
+/* What it is / is not lists */
+.identity-list { margin: 1.5rem 0; }
+.identity-item {
+  display: flex; gap: 1rem; align-items: flex-start;
+  padding: 1rem 0; border-bottom: 1px solid var(--border);
+}
+.identity-item:last-child { border-bottom: none; }
+.identity-marker {
+  font-family: var(--font-display); font-size: 0.65rem; font-weight: 800;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 0.25rem 0.6rem; border-radius: 9999px; white-space: nowrap; margin-top: 2px;
+}
+.marker-is { background: rgba(232,93,4,0.12); color: var(--ember); border: 1px solid rgba(232,93,4,0.25); }
+.marker-not { background: rgba(255,255,255,0.05); color: var(--text-faint); border: 1px solid var(--border); }
+.identity-content { font-size: 0.98rem; color: var(--text-muted); line-height: 1.75; }
+.identity-content strong { color: var(--text); }
+
+/* Principles grid */
+.principles-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+  background: var(--border); border: 1px solid var(--border);
+  border-radius: 0.75rem; overflow: hidden; margin: 2rem 0;
+}
+.principle-item {
+  background: var(--surface); padding: 1.5rem;
+  transition: background var(--transition);
+}
+.principle-item:hover { background: var(--surface-2); }
+.principle-name {
+  font-family: var(--font-display); font-size: 1.1rem; font-weight: 800;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  background: var(--grad-fire); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+}
+.principle-desc { font-size: 0.9rem; color: var(--text-muted); line-height: 1.65; }
+
+/* Closing declaration */
+.closing {
+  background: var(--surface);
+  border: 1px solid var(--border); border-radius: 0.75rem;
+  padding: 3rem; margin: 3rem 0; text-align: center;
+}
+.closing-lines { list-style: none; margin-bottom: 2rem; }
+.closing-lines li {
+  font-size: 1.05rem; color: var(--text-muted); line-height: 2;
+  border-bottom: 1px solid var(--border); padding: 0.5rem 0;
+}
+.closing-lines li:last-child { border-bottom: none; }
+.closing-lines li strong {
+  background: var(--grad-fire); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  font-weight: 600;
+}
+.closing-tagline {
+  font-family: var(--font-display); font-size: clamp(1.4rem, 3.5vw, 2.2rem);
+  font-weight: 800; color: var(--text); letter-spacing: 0.02em; line-height: 1.3;
+}
+
+/* ── BOTTOM CTA ── */
+.manifesto-cta {
+  border-top: 1px solid var(--border);
+  padding: 5rem 1.5rem;
+  text-align: center;
+  background: var(--surface-2);
+}
+.manifesto-cta h2 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.8rem);
+  font-weight: 800; letter-spacing: -0.01em;
+  background: var(--grad-fire); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 0.75rem;
+}
+.manifesto-cta p { color: var(--text-muted); margin-bottom: 2rem; font-size: 1.05rem; }
+.btn-primary {
+  background: var(--grad-fire); color: #0e0d0b; border: none;
+  padding: 1rem 2.5rem; border-radius: 9999px;
+  font-size: 1rem; font-weight: 700; font-family: var(--font-body);
+  cursor: pointer; text-decoration: none; display: inline-block;
+  transition: opacity var(--transition), transform var(--transition);
+}
+.btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+
+/* ── FOOTER ── */
+footer {
+  padding: 2rem 1.5rem; border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.footer-logo {
+  font-family: var(--font-display); font-size: 1.2rem; font-weight: 700;
+  background: var(--grad-fire); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.footer-tagline { font-size: 0.8rem; color: var(--text-faint); }
+.footer-links { display: flex; gap: 1.5rem; }
+.footer-links a { font-size: 0.85rem; color: var(--text-muted); text-decoration: none; transition: color var(--transition); }
+.footer-links a:hover { color: var(--gold); }
+
+/* ── REVEAL ── */
+.reveal {
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 0.65s cubic-bezier(0.16,1,0.3,1), transform 0.65s cubic-bezier(0.16,1,0.3,1);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+  .principles-grid { grid-template-columns: 1fr; }
+  .nav-links a.nav-text { display: none; }
+  footer { flex-direction: column; gap: 1rem; text-align: center; }
+  .closing { padding: 2rem 1.25rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <a class="nav-logo" href="emoclew-landing.html">
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-label="Emoclew">
+      <defs>
+        <linearGradient id="lg" x1="0" y1="32" x2="32" y2="0">
+          <stop offset="0%" stop-color="#e85d04"/>
+          <stop offset="45%" stop-color="#ffd166"/>
+          <stop offset="100%" stop-color="#90e0ef"/>
+        </linearGradient>
+      </defs>
+      <path d="M16 2 C16 2 6 10 6 18 C6 23.5 10.5 28 16 28 C21.5 28 26 23.5 26 18 C26 10 16 2 16 2Z" fill="url(#lg)" opacity="0.9"/>
+      <path d="M16 10 C16 10 11 15 11 19 C11 21.8 13.2 24 16 24 C18.8 24 21 21.8 21 19 C21 15 16 10 16 10Z" fill="#0e0d0b" opacity="0.7"/>
+      <path d="M16 16 C16 16 13.5 18.5 13.5 20.5 C13.5 22 14.6 23 16 23 C17.4 23 18.5 22 18.5 20.5 C18.5 18.5 16 16 16 16Z" fill="url(#lg)" opacity="0.8"/>
+    </svg>
+    <span class="nav-logo-text">EMOCLEW</span>
+  </a>
+  <div class="nav-links">
+    <a href="emoclew-landing.html" class="nav-text">Home</a>
+    <a href="emoclew-landing.html#about" class="nav-text">About</a>
+    <button class="btn-nav-disabled" disabled aria-disabled="true">Log in</button>
+    <a href="emoclew-landing.html#waitlist" class="btn-nav">Join the waitlist</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="manifesto-hero">
+  <div class="hero-inner">
+    <div class="doc-type-label">✦ Founding Document</div>
+    <h1>Letter of Identity<br>and Founding<br>Principles</h1>
+    <p class="manifesto-hero-sub">
+      The honest account of what Emoclew is, who it serves, why it exists, and how it intends to conduct itself with the people who build inside it.
+    </p>
+    <div class="meta-row">
+      <span class="meta-pill live">Living Document</span>
+      <span class="meta-pill">Version 1.0</span>
+      <span class="meta-pill">Established 2026</span>
+    </div>
+  </div>
+</section>
+
+<!-- DOCUMENT BODY -->
+<div class="manifesto-body">
+
+  <!-- Preamble -->
+  <p class="body-text reveal" style="margin-top:0; padding-top: 0.5rem;">
+    This document establishes the identity, purpose, values, and commitments of Emoclew. It is the foundational record of what this platform is, who it serves, why it exists at this particular moment in history, and how it intends to conduct itself in relationship with the people who build inside it.
+  </p>
+  <p class="body-text reveal">
+    This is not a terms of service. It is not a marketing statement. It is the honest account of what we are and what we have promised to be.
+  </p>
+  <p class="body-text reveal">
+    It should be read by every person who builds on this platform, every partner who works with it, and every investor who supports it. <strong>If anything in this document ever conflicts with how the platform behaves in practice, the document is right and the practice must change.</strong>
+  </p>
+
+  <!-- Part I -->
+  <div class="part-divider reveal">
+    <div class="part-label">Part I — The Context</div>
+    <div class="part-divider-line"></div>
+  </div>
+
+  <h2 class="section-heading reveal">The Moment We Are<br><span>Building In</span></h2>
+
+  <p class="body-text reveal">Emoclew exists in a specific historical moment. That moment must be named honestly.</p>
+  <p class="body-text reveal">
+    Artificial intelligence is restructuring the labour market at a pace and scale that existing institutions are not prepared to absorb. Corporations that employed large numbers of highly skilled engineers, designers, and builders are reducing those workforces — not because the people were inadequate, but because the economic calculus of automation has shifted permanently.
+  </p>
+  <p class="body-text reveal">
+    <strong>The people being displaced are not failed workers.</strong> They are capable, trained, experienced builders who find themselves without an institutional home at a time when the traditional path of finding the next equivalent position is narrowing.
+  </p>
+  <p class="body-text reveal">At the same time, the tools required to build software products, test ideas, reach markets, and operate a company have become more accessible to individuals than at any previous point. The gap between a capable person and a functioning product has never been smaller.</p>
+
+  <div class="convergence reveal">
+    <div class="convergence-item">
+      <div class="convergence-dot"></div>
+      <div class="convergence-text">More skilled people are available than the existing system can absorb.</div>
+    </div>
+    <div class="convergence-item">
+      <div class="convergence-dot"></div>
+      <div class="convergence-text">More leverage is accessible to individuals than ever before.</div>
+    </div>
+    <div class="convergence-item">
+      <div class="convergence-dot"></div>
+      <div class="convergence-text">The structures that previously captured most of that talent are becoming less reliable.</div>
+    </div>
+  </div>
+
+  <div class="pull-quote reveal">
+    <p><span>Emoclew is built for this convergence.</span></p>
+  </div>
+
+  <!-- Part II -->
+  <div class="part-divider reveal">
+    <div class="part-label">Part II — Identity</div>
+    <div class="part-divider-line"></div>
+  </div>
+
+  <h2 class="section-heading reveal">What Emoclew <span>Is</span></h2>
+
+  <div class="identity-list reveal">
+    <div class="identity-item">
+      <span class="identity-marker marker-is">Is</span>
+      <div class="identity-content"><strong>An open accelerator platform.</strong> A structured system through which anyone, anywhere in the world, can take an idea from its earliest stage through the formation of a real, operating company — earning support, tools, and income along the way.</div>
+    </div>
+    <div class="identity-item">
+      <span class="identity-marker marker-is">Is</span>
+      <div class="identity-content"><strong>A community-governed meritocracy.</strong> Progress within the platform is determined by real work, public accountability, and community recognition — not by who someone knows, where they are from, or how polished their presentation is.</div>
+    </div>
+    <div class="identity-item">
+      <span class="identity-marker marker-is">Is</span>
+      <div class="identity-content"><strong>A shared engine.</strong> The success of individual companies built on the platform contributes directly to the platform's ability to support the next generation of founders. This is structural, not aspirational.</div>
+    </div>
+    <div class="identity-item">
+      <span class="identity-marker marker-is">Is</span>
+      <div class="identity-content"><strong>A practical path to company formation.</strong> The platform provides the infrastructure — legal, financial, and operational — that allows a founder anywhere in the world to create a legitimate, incorporated company with real access to markets, banking, and tools.</div>
+    </div>
+    <div class="identity-item">
+      <span class="identity-marker marker-is">Is</span>
+      <div class="identity-content"><strong>A response to displacement.</strong> Emoclew is explicitly designed for a moment when many capable people lack an institutional home and need a practical next step that does not require navigating complex systems alone.</div>
+    </div>
+  </div>
+
+  <h2 class="section-heading reveal" style="margin-top: 3rem;">What Emoclew <span>Is Not</span></h2>
+
+  <div class="identity-list reveal">
+    <div class="identity-item">
+      <span class="identity-marker marker-not">Not</span>
+      <div class="identity-content"><strong>A traditional venture capital firm.</strong> It does not select a small number of already-advantaged projects and fund them while leaving everyone else behind.</div>
+    </div>
+    <div class="identity-item">
+      <span class="identity-marker marker-not">Not</span>
+      <div class="identity-content"><strong>An exclusive accelerator.</strong> It has no application process designed to reject. Entry is open to anyone willing to commit to building in public.</div>
+    </div>
+    <div class="identity-item">
+      <span class="identity-marker marker-not">Not</span>
+      <div class="identity-content"><strong>A charity.</strong> It is a structured platform with real financial relationships. Its generosity is architectural — built into how the model works — not discretionary.</div>
+    </div>
+    <div class="identity-item">
+      <span class="identity-marker marker-not">Not</span>
+      <div class="identity-content"><strong>A hustle-culture environment.</strong> It will not reward burnout, celebrate overwork, or design systems that apply unnecessary pressure to its founders. The pace is monthly. The expectations are clear. The environment is intended to be sustainable.</div>
+    </div>
+    <div class="identity-item">
+      <span class="identity-marker marker-not">Not</span>
+      <div class="identity-content"><strong>A shortcut.</strong> It is a fair shot.</div>
+    </div>
+  </div>
+
+  <!-- Part III -->
+  <div class="part-divider reveal">
+    <div class="part-label">Part III — Purpose</div>
+    <div class="part-divider-line"></div>
+  </div>
+
+  <h2 class="section-heading reveal">The Main <span>Goal</span></h2>
+
+  <p class="body-text reveal">
+    The central purpose of Emoclew is to harness the power of creativity and creation from people everywhere — and to give that creativity the structure it needs to become something real.
+  </p>
+  <p class="body-text reveal">
+    Most platforms for building companies were designed for a narrow slice of the global population. Emoclew is designed to be genuinely global in reach and genuinely open in access.
+  </p>
+
+  <div class="pull-quote reveal">
+    <p>The best ideas do not belong only to people already inside the system. <span>They belong to everyone.</span></p>
+  </div>
+
+  <h2 class="section-heading reveal">The Communities <span>We Serve</span></h2>
+
+  <div class="identity-list reveal">
+    <div class="identity-item">
+      <span class="identity-marker marker-is">For</span>
+      <div class="identity-content">Displaced builders looking for a next step that honours their skills.</div>
+    </div>
+    <div class="identity-item">
+      <span class="identity-marker marker-is">For</span>
+      <div class="identity-content">First-time founders who have ideas but lack the network, infrastructure, or knowledge to start alone.</div>
+    </div>
+    <div class="identity-item">
+      <span class="identity-marker marker-is">For</span>
+      <div class="identity-content">Builders in communities and regions where access to startup infrastructure has historically been unavailable or inaccessible.</div>
+    </div>
+    <div class="identity-item">
+      <span class="identity-marker marker-is">For</span>
+      <div class="identity-content">Teams that want to form organically — where complementary skills can find each other, equity can be negotiated fairly, and collaboration can be structured with proper foundations.</div>
+    </div>
+    <div class="identity-item">
+      <span class="identity-marker marker-is">For</span>
+      <div class="identity-content">Anyone who believes their best work is still ahead of them and who wants an environment built to help them do it.</div>
+    </div>
+  </div>
+
+  <!-- Part IV -->
+  <div class="part-divider reveal">
+    <div class="part-label">Part IV — Mental Health and Human Dignity</div>
+    <div class="part-divider-line"></div>
+  </div>
+
+  <h2 class="section-heading reveal">Acknowledging<br><span>the Weight</span></h2>
+
+  <p class="body-text reveal">Displacement carries a weight that is rarely named in professional contexts.</p>
+  <p class="body-text reveal">
+    The loss of a role is not only the loss of income. For many people, professional identity is deeply tied to personal identity. When that role disappears — not through failure but through structural change — the result is often not simply inconvenience but genuine distress.
+  </p>
+  <p class="body-text reveal">
+    <strong>People are losing structure, community, daily purpose, and a sense of their own worth at the same time.</strong> That combination is serious. It deserves to be acknowledged directly rather than glossed over with optimism.
+  </p>
+
+  <h2 class="section-heading reveal" style="margin-top:3rem;">What We <span>Commit To</span></h2>
+
+  <p class="body-text reveal">Emoclew commits to building an environment that treats this reality with honesty and care.</p>
+  <div class="identity-list reveal">
+    <div class="identity-item">
+      <span class="identity-marker marker-is">We</span>
+      <div class="identity-content">Design a platform where stress is not the operating condition. Where progress is clear and achievable. Where people are not made to feel that their value depends on their velocity.</div>
+    </div>
+    <div class="identity-item">
+      <span class="identity-marker marker-is">We</span>
+      <div class="identity-content">Build community structures that reduce isolation and replace it with genuine connection and mutual support.</div>
+    </div>
+    <div class="identity-item">
+      <span class="identity-marker marker-is">We</span>
+      <div class="identity-content">Hold space for people at different stages — those who are ready to move fast, and those who need to rebuild confidence before they build anything else.</div>
+    </div>
+    <div class="identity-item">
+      <span class="identity-marker marker-is">We</span>
+      <div class="identity-content">Never exploit the urgency of displacement to extract commitment that is not sustainable.</div>
+    </div>
+  </div>
+
+  <!-- Part V -->
+  <div class="part-divider reveal">
+    <div class="part-label">Part V — The Model</div>
+    <div class="part-divider-line"></div>
+  </div>
+
+  <h2 class="section-heading reveal">How the Platform <span>Works</span></h2>
+
+  <p class="body-text reveal">
+    Founders join the platform and submit their project at the first level. From there, they build in public — sharing progress, updating their status, engaging with the community, and improving their work.
+  </p>
+  <p class="body-text reveal">
+    Each month, a voting and review cycle evaluates projects across objective metrics and community engagement. The top-performing projects advance through levels. Each level unlocks greater support, tooling, and infrastructure.
+  </p>
+  <p class="body-text reveal">
+    At the highest initial levels, the platform facilitates the automatic incorporation of a company, the opening of a banking relationship, and access to the US market — creating the conditions for a globally-accessible founder to operate like a US-based company.
+  </p>
+
+  <div class="pull-quote reveal">
+    <p>The model works only if <span>the founders win.</span> That alignment is the foundation of the platform's relationship with its community.</p>
+  </div>
+
+  <!-- Part VI -->
+  <div class="part-divider reveal">
+    <div class="part-label">Part VI — Governing Principles</div>
+    <div class="part-divider-line"></div>
+  </div>
+
+  <h2 class="section-heading reveal">How We <span>Behave</span></h2>
+  <p class="body-text reveal" style="margin-bottom: 1.5rem;">The following principles govern how Emoclew behaves in every context.</p>
+
+  <div class="principles-grid reveal">
+    <div class="principle-item">
+      <div class="principle-name">Openness</div>
+      <div class="principle-desc">Entry is open. Progress is earned. Decisions are visible.</div>
+    </div>
+    <div class="principle-item">
+      <div class="principle-name">Honesty</div>
+      <div class="principle-desc">The terms of participation are plain and complete. No hidden conditions. No fine print designed to obscure.</div>
+    </div>
+    <div class="principle-item">
+      <div class="principle-name">Fairness</div>
+      <div class="principle-desc">The same rules apply to everyone. The same opportunities are available to anyone who meets the standard.</div>
+    </div>
+    <div class="principle-item">
+      <div class="principle-name">Sustainability</div>
+      <div class="principle-desc">The platform is designed for the long term. Short-term extraction at the expense of founder wellbeing is incompatible with the platform's purpose.</div>
+    </div>
+    <div class="principle-item">
+      <div class="principle-name">Community</div>
+      <div class="principle-desc">Individual success and collective benefit are structurally linked. The platform does not pit founders against each other.</div>
+    </div>
+    <div class="principle-item">
+      <div class="principle-name">Dignity</div>
+      <div class="principle-desc">Every founder is treated as a capable adult with real potential. No condescension. No gatekeeping. No manufactured obstacles.</div>
+    </div>
+  </div>
+
+  <!-- Part VII — Closing -->
+  <div class="part-divider reveal">
+    <div class="part-label">Part VII — Closing Declaration</div>
+    <div class="part-divider-line"></div>
+  </div>
+
+  <div class="closing reveal">
+    <ul class="closing-lines">
+      <li>Emoclew is built for <strong>a difficult moment.</strong></li>
+      <li>It is built on the belief that <strong>capability is widely distributed</strong> and that most of it never finds the right structure.</li>
+      <li>It is built on the belief that <strong>creativity, given the right environment,</strong> is the most powerful economic force there is.</li>
+      <li>It is built on the belief that people who have been <strong>displaced, overlooked, or underestimated</strong> deserve a real and practical path — not a motivational speech.</li>
+      <li>It is built for the engineer, the designer, the builder, the first-time founder, <strong>the person who has been carrying an idea for years</strong> and never had the right place to take it.</li>
+      <li>It is built to give <strong>hope that is not abstract.</strong> Hope that has a next step attached to it. Hope that compounds into something real.</li>
+    </ul>
+    <div class="closing-tagline">Built for builders.<br>Built for now. Built to last.</div>
+  </div>
+
+</div><!-- /manifesto-body -->
+
+<!-- BOTTOM CTA -->
+<section class="manifesto-cta">
+  <h2>This is what we stand for.<br>Ready to build?</h2>
+  <p>Join the waitlist and be among the first founders on the platform.</p>
+  <a href="emoclew-landing.html#waitlist" class="btn-primary">Join the waitlist</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">EMOCLEW</div>
+  <div class="footer-tagline">Built for builders. Built for now. Built to last.</div>
+  <div class="footer-links">
+    <a href="emoclew-landing.html">Home</a>
+    <a href="emoclew-landing.html#waitlist">Join waitlist</a>
+  </div>
+</footer>
+
+<script>
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 40); }, { passive: true });
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
