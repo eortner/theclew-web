@@ -63,3 +63,6 @@ jest.config.ts
 Known tech debt
 
     Tests are integration tests hitting a real DB — needs to be refactored to unit tests with Prisma mocked at module level
+
+
+Add backend and frontend node_modules to git ignore
