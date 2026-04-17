@@ -1,0 +1,304 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [vector]
+}
+
+enum AuthProvider {
+  LOCAL
+  GOOGLE
+  FACEBOOK
+}
+
+enum UserRole {
+  FOUNDER
+  INVESTOR
+  ADMIN
+}
+
+enum Visibility {
+  PRIVATE
+  SELECTIVE
+  PUBLIC
+}
+
+enum ProjectStatus {
+  ACTIVE
+  DORMANT
+  ARCHIVED
+}
+
+enum NotificationType {
+  LEVEL_UP
+  MERGE_REQUEST
+  MERGE_ACCEPTED
+  MERGE_DECLINED
+  MERGE_FINALISED
+  ACQUISITION_OFFER
+  MESSAGE_RECEIVED
+  VISIBILITY_SHARE_REQUEST
+  INVESTOR_OFFER
+  SYSTEM
+}
+
+enum ThreadType {
+  MERGE
+  ACQUISITION
+  VISIBILITY_SHARE
+  GENERAL
+}
+
+enum ThreadStatus {
+  OPEN
+  PENDING_REAUTH          // both parties completed re-auth
+  PENDING_CONFIRMATION    // equity agreed, awaiting final confirmations
+  FINALISED
+  DECLINED
+  EXPIRED
+}
+
+enum MergePartyStatus {
+  PENDING
+  REAUTHED
+  CONFIRMED
+  DECLINED
+}
+
+// ─────────────────────────────────────────
+// USER
+// ─────────────────────────────────────────
+
+model User {
+  id           String       @id @default(cuid())
+  email        String       @unique
+  name         String
+  avatarUrl    String?
+  role         UserRole     @default(FOUNDER)
+  provider     AuthProvider @default(LOCAL)
+  providerId   String?
+  passwordHash String?
+  totpSecret   String?
+  totpEnabled  Boolean      @default(false)
+  totpVerifiedAt DateTime?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  projects          Project[]
+  waitlist          WaitlistEntry?
+  investments       Investment[]
+  notifications     Notification[]
+  threadsAsInitiator Thread[]       @relation("ThreadInitiator")
+  threadsAsRecipient Thread[]       @relation("ThreadRecipient")
+  messages          Message[]
+  mergeParties      MergeParty[]
+
+  @@index([email])
+  @@index([provider, providerId])
+}
+
+// ─────────────────────────────────────────
+// PROJECT
+// ─────────────────────────────────────────
+
+model Project {
+  id           String        @id @default(cuid())
+  name         String
+  description  String
+  visibility   Visibility    @default(PRIVATE)
+  status       ProjectStatus @default(ACTIVE)
+  tags         String[]      // denormalized cache of tag names for fast reads
+  currentLevel Int           @default(0)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  ownerId      String
+  owner        User          @relation(fields: [ownerId], references: [id])
+
+  projectTags   ProjectTag[]
+  levelHistory  LevelHistory[]
+  investments   Investment[]
+  threadsAsInitiatorProject Thread[] @relation("ThreadInitiatorProject")
+  threadsAsRecipientProject Thread[] @relation("ThreadRecipientProject")
+
+  @@index([ownerId])
+  @@index([visibility])
+  @@index([status])
+}
+
+// ─────────────────────────────────────────
+// TAGS
+// ─────────────────────────────────────────
+
+model Tag {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  category  String?  // "domain" | "tech" | "stage" | "model" | "geo" — UI only
+  embedding Unsupported("vector(768)")?
+  createdAt DateTime @default(now())
+
+  projectTags ProjectTag[]
+}
+
+model ProjectTag {
+  projectId String
+  tagId     Int
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tag     Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, tagId])
+  @@index([projectId])
+  @@index([tagId])
+}
+
+// ─────────────────────────────────────────
+// LEVEL HISTORY
+// ─────────────────────────────────────────
+
+model LevelHistory {
+  id         String   @id @default(cuid())
+  level      Int
+  achievedAt DateTime @default(now())
+
+  projectId  String
+  project    Project  @relation(fields: [projectId], references: [id])
+
+  @@index([projectId])
+}
+
+// ─────────────────────────────────────────
+// INVESTMENT
+// ─────────────────────────────────────────
+
+model Investment {
+  id                String    @id @default(cuid())
+  equityPercent     Float
+  totalAmount       Float
+  monthlyPayment    Float
+  termMonths        Int
+  revenueSharePct   Float
+  paymentsCompleted Int       @default(0)
+  equityVested      Float     @default(0)
+  abandonedAt       DateTime?
+  finalEquity       Float?
+  stripeSubId       String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  investorId  String
+  investor    User    @relation(fields: [investorId], references: [id])
+  projectId   String
+  project     Project @relation(fields: [projectId], references: [id])
+
+  @@index([investorId])
+  @@index([projectId])
+}
+
+// ─────────────────────────────────────────
+// NOTIFICATION
+// ─────────────────────────────────────────
+
+model Notification {
+  id        String           @id @default(cuid())
+  type      NotificationType
+  title     String
+  body      String
+  read      Boolean          @default(false)
+  metadata  Json?            // e.g. { threadId, projectId, level }
+  createdAt DateTime         @default(now())
+
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
+  @@index([userId, createdAt])
+}
+
+// ─────────────────────────────────────────
+// THREAD (structured conversation)
+// ─────────────────────────────────────────
+
+model Thread {
+  id        String       @id @default(cuid())
+  type      ThreadType
+  status    ThreadStatus @default(OPEN)
+  subject   String
+  expiresAt DateTime?    // threads can expire if no action taken
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  initiatorId String
+  initiator   User    @relation("ThreadInitiator", fields: [initiatorId], references: [id])
+  recipientId String
+  recipient   User    @relation("ThreadRecipient", fields: [recipientId], references: [id])
+
+  // Projects involved (for MERGE and ACQUISITION)
+  initiatorProjectId String?
+  initiatorProject   Project? @relation("ThreadInitiatorProject", fields: [initiatorProjectId], references: [id])
+  recipientProjectId String?
+  recipientProject   Project? @relation("ThreadRecipientProject", fields: [recipientProjectId], references: [id])
+
+  messages    Message[]
+  mergeParties MergeParty[]
+
+  @@index([initiatorId])
+  @@index([recipientId])
+  @@index([status])
+}
+
+// ─────────────────────────────────────────
+// MESSAGE
+// ─────────────────────────────────────────
+
+model Message {
+  id        String   @id @default(cuid())
+  body      String   @db.Text
+  createdAt DateTime @default(now())
+
+  threadId  String
+  thread    Thread   @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+
+  @@index([threadId, createdAt])
+}
+
+// ─────────────────────────────────────────
+// MERGE PARTY (per-user state in a merge/acquisition flow)
+// ─────────────────────────────────────────
+
+model MergeParty {
+  id               String           @id @default(cuid())
+  status           MergePartyStatus @default(PENDING)
+  proposedEquity   Float?           // equity % this party proposes to receive
+  reauthAt         DateTime?        // when they completed re-authentication
+  confirmedAt      DateTime?        // when they gave final confirmation
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  threadId  String
+  thread    Thread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User   @relation(fields: [userId], references: [id])
+
+  @@unique([threadId, userId])
+  @@index([threadId])
+}
+
+// ─────────────────────────────────────────
+// WAITLIST
+// ─────────────────────────────────────────
+
+model WaitlistEntry {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+
+  userId    String?  @unique
+  user      User?    @relation(fields: [userId], references: [id])
+}

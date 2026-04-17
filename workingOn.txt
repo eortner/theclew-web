@@ -1,0 +1,65 @@
+TOTP Backend Implementation Summary
+Dependencies
+
+    otplib (new version — no authenticator export, uses functional API)
+
+src/auth/totp.service.ts
+
+Functional API from otplib with AES-256-GCM encryption for the stored secret:
+
+    createTotpSecret(email) → { secret, otpauthUrl } using generateSecret() + generateURI({ issuer: 'Emoclew', label: email, secret })
+
+    encryptSecret(secret) → iv:tag:encrypted hex string using AES-256-GCM
+
+    decryptSecret(stored) → plaintext secret
+
+    verifyToken(token, encryptedSecret) → Promise<boolean> using await verify({ token, secret, epochTolerance: 1 })
+
+    Env var: TOTP_ENCRYPTION_KEY — must be a 64-char hex string (32 bytes)
+
+src/auth/totp.controller.ts
+
+Four endpoints, all await verifyToken(...) (critical — it's async):
+
+    setupTotp — stores encrypted secret, returns otpauthUrl
+
+    verifyAndEnableTotp — verifies token, sets totpEnabled: true, totpVerifiedAt
+
+    disableTotp — verifies token, clears TOTP fields
+
+    reauthTotp — verifies token, updates totpVerifiedAt
+
+src/auth/middleware.ts
+
+    requireTotp — checks totpEnabled, totpVerifiedAt, and enforces a 5-minute reauth window
+
+Prisma schema fields added to User
+
+    totpSecret String?
+
+    totpEnabled Boolean @default(false)
+
+    totpVerifiedAt DateTime?
+
+Migration
+
+bash
+npx dotenv-cli -e .env.test -- npx prisma migrate deploy
+
+tests/auth.totp.test.ts
+
+    totp.service is fully mocked via jest.mock — otplib never loads during tests
+
+    mockVerifyToken controls pass/fail per test
+
+    17 tests total, runs in ~5s
+
+jest.config.ts
+
+    Added transformIgnorePatterns for otplib/@otplib/@scure/@noble (needed if mock is ever removed)
+
+    Added .js transform entry for ESM packages
+
+Known tech debt
+
+    Tests are integration tests hitting a real DB — needs to be refactored to unit tests with Prisma mocked at module level

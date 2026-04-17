@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-barlow: 'Barlow Condensed';
+  --font-inter: 'Inter';
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+body { background: #0e0d0b; color: #e8e4dc; font-family: var(--font-inter), sans-serif; }
+
+.fire-text {
+  background: linear-gradient(135deg,#e85d04 0%,#f4a261 40%,#ffd166 70%,#48cae4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.fire-bg {
+  background: linear-gradient(135deg,#e85d04 0%,#f4a261 40%,#ffd166 70%,#48cae4 100%);
+}
