@@ -6,6 +6,7 @@ import { updateUserSchema } from './user.validation';
 const safeUser = {
   id: true, email: true, name: true, avatarUrl: true,
   role: true, provider: true, createdAt: true,
+  totpEnabled: true, totpVerifiedAt: true,
 };
 
 export async function getMe(req: Request, res: Response): Promise<void> {

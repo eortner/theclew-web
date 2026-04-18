@@ -3,7 +3,7 @@ const BASE = '/api';
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {
     ...options,
-    credentials: 'include', // always send the httpOnly cookie
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
       ...(options.headers ?? {}),
@@ -11,7 +11,6 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   });
 
   if (res.status === 401) {
-    // Session expired — redirect to login
     if (typeof window !== 'undefined') window.location.href = '/login';
     throw new Error('Unauthenticated');
   }
@@ -26,8 +25,19 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 }
 
 export const api = {
-  get:    <T>(path: string)                       => request<T>(path),
-  post:   <T>(path: string, body: unknown)        => request<T>(path, { method: 'POST',   body: JSON.stringify(body) }),
-  patch:  <T>(path: string, body: unknown)        => request<T>(path, { method: 'PATCH',  body: JSON.stringify(body) }),
-  delete: <T>(path: string)                       => request<T>(path, { method: 'DELETE' }),
+  get:    <T>(path: string)                 => request<T>(path),
+  post:   <T>(path: string, body: unknown)  => request<T>(path, { method: 'POST',   body: JSON.stringify(body) }),
+  patch:  <T>(path: string, body: unknown)  => request<T>(path, { method: 'PATCH',  body: JSON.stringify(body) }),
+  delete: <T>(path: string)                 => request<T>(path, { method: 'DELETE' }),
+
+  tags: {
+    list: <T>() => request<T>('/tags'),
+  },
+
+  totp: {
+    setup:   ()                    => request<{ otpauthUrl: string }>('/auth/totp/setup',   { method: 'POST', body: '{}' }),
+    verify:  (token: string)       => request<{ message: string }>('/auth/totp/verify',     { method: 'POST', body: JSON.stringify({ token }) }),
+    disable: (token: string)       => request<{ message: string }>('/auth/totp/disable',    { method: 'POST', body: JSON.stringify({ token }) }),
+    reauth:  (token: string)       => request<{ message: string }>('/auth/totp/reauth',     { method: 'POST', body: JSON.stringify({ token }) }),
+  },
 };
