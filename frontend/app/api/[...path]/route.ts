@@ -61,26 +61,10 @@ async function handler(req: NextRequest): Promise<NextResponse> {
       redirect: 'manual',
     });
   } catch {
-    return NextResponse.json(
-      { error: 'Service unavailable' },
-      { status: 503 }
-    );
+    return NextResponse.json({ error: 'Service unavailable' }, { status: 503 });
   }
 
   const resHeaders = new Headers();
-
-  for (const [key, value] of req.headers.entries()) {
-    if (ALLOWED_REQUEST_HEADERS.has(key.toLowerCase())) {
-      resHeaders.set(key, value);
-    }
-  }
-
-  // Explicitly enforce content-type for requests with a body
-  // Next.js can drop this header when reading the stream
-  if (!['GET', 'HEAD'].includes(req.method) && !forwardHeaders.get('content-type')) {
-    forwardHeaders.set('content-type', 'application/json');
-  }
-
   const setCookieHeader = backendRes.headers.get('set-cookie');
   if (setCookieHeader && setCookieHeader.includes(AUTH_COOKIE)) {
     resHeaders.set('set-cookie', setCookieHeader);
@@ -88,14 +72,18 @@ async function handler(req: NextRequest): Promise<NextResponse> {
 
   if (backendRes.status >= 300 && backendRes.status < 400) {
     const location = backendRes.headers.get('location');
-    if (location) {
-      return NextResponse.redirect(location, { status: backendRes.status });
-    }
+    if (location) return NextResponse.redirect(location, { status: backendRes.status });
   }
 
-  const resBody = await backendRes.arrayBuffer();
+  let json: unknown;
+  try {
+    json = await backendRes.json();
+  } catch {
+    // Backend returned no body or non-JSON — normalise to empty object
+    json = {};
+  }
 
-  return new NextResponse(resBody, {
+  return NextResponse.json(json, {
     status: backendRes.status,
     headers: resHeaders,
   });

@@ -87,11 +87,11 @@ export function logout(req: Request, res: Response): void {
       const payload = verifyToken(token);
       blacklistToken(payload.jti);
     } catch {
-      // Already invalid — still clear and return 204
+      // Already invalid — still clear and proceed
     }
   }
   res.clearCookie(COOKIE_NAME, { path: '/' });
-  res.status(204).send();
+  res.json({ message: 'Logged out' });
 }
 
 export function oauthCallback(req: Request, res: Response): void {

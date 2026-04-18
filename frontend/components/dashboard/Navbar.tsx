@@ -11,8 +11,13 @@ export function Navbar({ userName, avatarUrl }: { userName: string; avatarUrl?: 
   const router = useRouter();
 
   async function logout() {
-    await api.post("/auth/logout", {});
-    router.push("/login");
+    try {
+      await api.post("/auth/logout", {});
+    } catch {
+      // Proceed to login regardless
+    } finally {
+      router.push("/login");
+    }
   }
 
   return (

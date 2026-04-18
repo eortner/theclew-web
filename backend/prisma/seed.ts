@@ -1,4 +1,6 @@
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
+
 const prisma = new PrismaClient();
 
 const TAGS: { name: string; category: string }[] = [
@@ -94,7 +96,7 @@ const TAGS: { name: string; category: string }[] = [
   { name: 'global',          category: 'geo' },
 ];
 
-async function main() {
+async function seedTags() {
   console.log('Seeding tags...');
   for (const tag of TAGS) {
     await prisma.tag.upsert({
@@ -104,6 +106,34 @@ async function main() {
     });
   }
   console.log(`✅ ${TAGS.length} tags seeded.`);
+}
+
+async function seedDevUser() {
+  if (process.env.NODE_ENV === 'production') return;
+
+  const email = 'dev@emoclew.com';
+  const existing = await prisma.user.findUnique({ where: { email } });
+  if (existing) {
+    console.log('ℹ️  Dev user already exists — skipping.');
+    return;
+  }
+
+  const passwordHash = await bcrypt.hash('dev1234', 12);
+  await prisma.user.create({
+    data: {
+      email,
+      name:         'Dev User',
+      role:         'FOUNDER',
+      provider:     'LOCAL',
+      passwordHash,
+    },
+  });
+  console.log('✅ Dev user created — dev@emoclew.com / dev1234');
+}
+
+async function main() {
+  await seedTags();
+  await seedDevUser();
 }
 
 main()
