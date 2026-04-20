@@ -26,7 +26,7 @@ export async function createThread(req: Request, res: Response): Promise<void> {
   const parsed = createThreadSchema.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: parsed.error.flatten() }); return; }
 
-  const { recipientId, type, subject, initiatorProjectId, recipientProjectId } = parsed.data;
+  const { recipientId, type, subject, termsNote, initiatorProjectId, recipientProjectId } = parsed.data;
 
   if (recipientId === user.id) {
     res.status(400).json({ error: 'Cannot create a thread with yourself' });
