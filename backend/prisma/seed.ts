@@ -105,7 +105,21 @@ async function seedTags() {
       create: tag,
     });
   }
+
+  // Seed launch announcement
+  await prisma.announcement.upsert({
+    where:  { key: 'launch-2026' },
+    create: {
+      key:   'launch-2026',
+      title: 'Welcome to Emoclew — Early Access',
+      body:  'You are part of our founding group. In 30 days we will move to a $11.99/year subscription. This funds our own secured local AI models, shared with founders who reach Level 1. As our community grows, we will bring more builders to higher tiers and expand tooling across all levels.',
+      active: true,
+    },
+    update: {},
+  });
+
   console.log(`✅ ${TAGS.length} tags seeded.`);
+  console.log('✅ Launch announcement seeded.');
 }
 
 async function seedDevUser() {
@@ -139,3 +153,4 @@ async function main() {
 main()
   .catch(e => { console.error(e); process.exit(1); })
   .finally(() => prisma.$disconnect());
+

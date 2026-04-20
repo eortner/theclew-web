@@ -19,6 +19,8 @@ import { mergeRouter } from './merge/merge.routes';
 import { adminRouter } from './admin/admin.routes';
 import { totpRouter } from './auth/totp.routes';
 import { tagRouter } from './tags/tag.routes';
+import { announcementRouter } from './announcements/announcement.routes';
+import { slackRouter } from './slack/slack.routes';
 
 const app = express();
 const isProd = process.env.NODE_ENV === 'production';
@@ -66,6 +68,8 @@ app.use('/threads',       threadRouter);
 app.use('/merge',         mergeRouter);
 app.use('/admin',         adminRouter);
 app.use('/tags',          tagRouter);
+app.use('/announcements', announcementRouter);
+app.use('/slack',         slackRouter);
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
 app.use((_req, res) => res.status(404).json({ error: 'Not found' }));

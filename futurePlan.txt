@@ -1,0 +1,130 @@
+Here is the database schema mapping to track pre-incorporation merge agreements, SAFE assumptions, and the mandatory TOTP audit trail.
+
+This is designed for Prisma and PostgreSQL 16 (as specified in your stack), ensuring strict state control and avoiding accidental deletion of investor rights.
+1. Enums for Strict State Tracking
+
+text
+enum ContractType {
+  MERGE_AGREEMENT
+  INVESTOR_SAFE
+  SAFE_ASSUMPTION_ADDENDUM
+  LEVEL_3_INCORPORATION
+}
+
+enum ContractState {
+  PENDING_SIGNATURES  // Waiting for all parties to TOTP sign
+  ACTIVE              // Fully signed and currently legally binding
+  SUPERSEDED          // Replaced by a new merge (only for MERGE_AGREEMENT)
+  ASSUMED             // Re-assigned to a new merged project (only for INVESTOR_SAFE)
+  TERMINATED          // Canceled by mutual agreement
+}
+
+2. Core Contract Tracking
+
+This table tracks the document itself. Notice it does not store the PDF blob; it stores the metadata. If you generate PDFs on demand, this table contains the parameters needed to render it.
+
+text
+model Contract {
+  id                String        @id @default(uuid())
+  type              ContractType
+  state             ContractState @default(PENDING_SIGNATURES)
+  
+  // The primary project this contract belongs to (e.g., the merged entity)
+  projectId         String
+  project           Project       @relation(fields: [projectId], references: [id])
+
+  // For SAFE Assumptions: If this contract assumes an older contract, link it here
+  assumesContractId String?       @unique // One-to-one assumption
+  assumesContract   Contract?     @relation("ContractAssumption", fields: [assumesContractId], references: [id])
+  assumedBy         Contract?     @relation("ContractAssumption")
+
+  // The actual JSON data of the agreement terms (equity splits, SAFE amounts, etc.)
+  // If the PDF is generated on demand, this JSON is the source of truth for rendering.
+  termsData         Json          
+
+  // When all signatures are complete
+  executedAt        DateTime?     
+
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  signatures        SignatureEvent[]
+}
+
+3. The Audit Trail (Append-Only)
+
+This is the most critical table for your legal protection. It records the mandatory TOTP re-verification event required for all binding platform actions. Once written, rows here are never modified or deleted.
+
+text
+model SignatureEvent {
+  id                String    @id @default(uuid())
+  
+  contractId        String
+  contract          Contract  @relation(fields: [contractId], references: [id])
+
+  // The user who signed
+  userId            String
+  user              User      @relation(fields: [userId], references: [id])
+
+  // Legal role (e.g., "FOUNDING_PARTY_A", "INVESTOR")
+  role              String    
+
+  // The TOTP audit trail data required by the design doc
+  totpVerifiedAt    DateTime
+  ipAddress         String
+  userAgent         String
+
+  // Hash of the contract's `termsData` at the exact moment of signing.
+  // This proves the terms were not altered in the DB after the user signed.
+  documentHash      String    
+
+  createdAt         DateTime  @default(now())
+
+  // Ensure a user only signs a specific role on a specific contract once
+  @@unique([contractId, userId, role])
+}
+
+How the Workflow Updates the DB
+
+When Project A and Project B merge into Project C:
+
+    The Merge Agreement:
+
+        Platform creates a new Contract (type: MERGE_AGREEMENT, state: PENDING_SIGNATURES) for Project C.
+
+        Founders A and B do their TOTP verification.
+
+        Platform creates SignatureEvent rows.
+
+        Contract becomes ACTIVE.
+
+        The platform automatically updates Project A and Project B's old MERGE_AGREEMENTs to SUPERSEDED.
+
+    The SAFE Assumption (If Project A had Investors):
+
+        Platform finds Project A's ACTIVE INVESTOR_SAFE contracts.
+
+        Platform creates a new Contract for Project C (type: SAFE_ASSUMPTION_ADDENDUM), linking it to the old SAFE via assumesContractId.
+
+        Founders TOTP-sign the assumption addendum.
+
+        The addendum becomes ACTIVE.
+
+        The original SAFE's state is updated from ACTIVE to ASSUMED.
+
+Security Check (Did you understand the changes?)
+
+Before I start writing any of the TypeScript services or actual PDF-generation logic for this, does this Prisma schema correctly represent your goal of preserving investor rights while keeping the database as the immutable source of truth for the legal audit trail?
+
+So in short:
+Yes, the changes create a secure database structure where no contract is ever deleted or silently overwritten during a merge.
+
+Instead of deleting old contracts:
+
+    Old Merge Agreements are marked SUPERSEDED when a new merge is signed.
+
+    Old Investor SAFEs are marked ASSUMED when the new merged entity signs a SAFE_ASSUMPTION_ADDENDUM taking over the obligations.
+
+    The Audit Trail (SignatureEvent table) strictly records the mandatory TOTP verification, timestamp, and a hash of the contract terms at the exact moment of signing.
+
+This means if you are hacked, you don't lose the legal truth—the database holds an immutable, hashed record of exactly who agreed to what, and when.

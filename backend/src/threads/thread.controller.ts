@@ -5,7 +5,7 @@ import { createThreadSchema, sendMessageSchema } from './thread.validation';
 import { createNotification } from '../notifications/notification.service';
 
 const threadSelect = {
-  id: true, type: true, status: true, subject: true,
+  id: true, type: true, status: true, subject: true, termsNote: true,
   expiresAt: true, createdAt: true, updatedAt: true,
   initiator: { select: { id: true, name: true, avatarUrl: true } },
   recipient: { select: { id: true, name: true, avatarUrl: true } },
@@ -52,7 +52,7 @@ export async function createThread(req: Request, res: Response): Promise<void> {
 
   const thread = await prisma.thread.create({
     data: {
-      type, subject, expiresAt,
+      type, subject, termsNote, expiresAt, 
       initiatorId: user.id,
       recipientId,
       initiatorProjectId,

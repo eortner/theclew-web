@@ -1,68 +1,86 @@
-TOTP Backend Implementation Summary
-Dependencies
+That's it. The TotpGate component is now reusable — any future TOTP-gated screen just wraps its content in <TotpGate> and gets the countdown + inline re-verify for free.Ok this is perfect, looks good, still needs verification and I need to add the tests. Lets continue tomorrow. Can you tell me what we did today and what do we have to do tomorrow? I told you I want to do some effects when going over the cards with the mouse. Make the whole page more dynamic. Also we need to expose it tomorrow, and link it to the domain I bought. 
+And last we need to correct the google and facebook logins, at least test that they work. Oh also the merging of companies, and we have to create the community. Aaaaaaall that tomorrow. Give me a prompt to work on what it is missing, what we are going to do and what needs verification.9:29 PMToday's summary
+What we built
 
-    otplib (new version — no authenticator export, uses functional API)
+TOTP login flow — 2FA on sign in, 202 handshake, re-verify inline
+Merge flow — full TOTP signature replacement, equity proposal, confirm, decline
+Project visibility enforcement — no TOTP = forced private
+Announcements system — dismissible banner, seeded launch announcement
+Dashboard overhaul — per-project cards with level, visibility, equity, tags
+Notification drawer — slide-in from navbar bell
+Thread page — TOTP reauth step, terms note display
+TotpGate component — reusable countdown ring, inline re-verify on expiry
+QR code on TOTP settings page
+Second seed user for testing
 
-src/auth/totp.service.ts
+What needs verification tomorrow before touching anything else
 
-Functional API from otplib with AES-256-GCM encryption for the stored secret:
-
-    createTotpSecret(email) → { secret, otpauthUrl } using generateSecret() + generateURI({ issuer: 'Emoclew', label: email, secret })
-
-    encryptSecret(secret) → iv:tag:encrypted hex string using AES-256-GCM
-
-    decryptSecret(stored) → plaintext secret
-
-    verifyToken(token, encryptedSecret) → Promise<boolean> using await verify({ token, secret, epochTolerance: 1 })
-
-    Env var: TOTP_ENCRYPTION_KEY — must be a 64-char hex string (32 bytes)
-
-src/auth/totp.controller.ts
-
-Four endpoints, all await verifyToken(...) (critical — it's async):
-
-    setupTotp — stores encrypted secret, returns otpauthUrl
-
-    verifyAndEnableTotp — verifies token, sets totpEnabled: true, totpVerifiedAt
-
-    disableTotp — verifies token, clears TOTP fields
-
-    reauthTotp — verifies token, updates totpVerifiedAt
-
-src/auth/middleware.ts
-
-    requireTotp — checks totpEnabled, totpVerifiedAt, and enforces a 5-minute reauth window
-
-Prisma schema fields added to User
-
-    totpSecret String?
-
-    totpEnabled Boolean @default(false)
-
-    totpVerifiedAt DateTime?
-
-Migration
-
-bash
-npx dotenv-cli -e .env.test -- npx prisma migrate deploy
-
-tests/auth.totp.test.ts
-
-    totp.service is fully mocked via jest.mock — otplib never loads during tests
-
-    mockVerifyToken controls pass/fail per test
-
-    17 tests total, runs in ~5s
-
-jest.config.ts
-
-    Added transformIgnorePatterns for otplib/@otplib/@scure/@noble (needed if mock is ever removed)
-
-    Added .js transform entry for ESM packages
-
-Known tech debt
-
-    Tests are integration tests hitting a real DB — needs to be refactored to unit tests with Prisma mocked at module level
+TOTP enable flow — logout bug partially fixed, needs confirmation it's stable
+Google and Facebook OAuth — untested, need to verify callbacks work end to end
+Merge flow — full happy path test with two users
+Announcement dismissal — persists correctly after page reload
+Project visibility block — confirm 403 fires when TOTP disabled
+All new backend tests — npm test needs a clean pass
 
 
-Add backend and frontend node_modules to git ignore
+Tomorrow's work
+1. Verification pass
+Run the full test suite and manually test the items above with the two seed users.
+2. OAuth fix
+Test Google and Facebook login. The routes are there but the callbacks may need GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, FACEBOOK_APP_ID, FACEBOOK_APP_SECRET verified in .env and the redirect URIs registered in the provider consoles.
+3. Dashboard animations and hover effects
+Per-project cards need hover micro-interactions — lift on hover, ember glow border, animated equity bar fill on mount, level badge pulse, staggered card entrance animation.
+4. Merge flow — complete and test
+Full end-to-end with two users. Equity negotiation, both sides TOTP signing, finalisation, level inheritance. Also need to verify the thread termsNote flows through correctly.
+5. Community feature
+The design doc mentions community ratification for merges. Need to scope this properly — schema needs a Vote model, 72hr window, quorum logic, silence rule. This is a significant feature, needs its own planning session at the start of the day.
+6. Deployment and domain
+
+Decide hosting (VPS, Railway, Render, Fly.io — need your answer)
+Set up environment variables in production
+Configure reverse proxy (Nginx or Caddy) for the domain
+SSL certificate
+Link frontend and backend to the domain you bought
+Need to know: is this a monorepo deploy or separate frontend/backend hosts?
+
+7. SAFE contract DB records
+Scope and build the structured DB record for merge contracts (Level 1+). No PDF yet, just the record.
+
+Prompt for tomorrow
+Paste this at the start of the session:
+We are continuing work on Emoclew. Design doc is EMOCLEW_DESIGN_DOCUMENT_v6.md 
+— always follow it.
+
+Yesterday we completed:
+- TOTP login 2FA, TotpGate component with countdown and inline re-verify
+- Merge flow with TOTP signature (equity, reauth, confirm, decline)
+- Project visibility enforcement gated on TOTP
+- Dismissible announcement banner (launch-2026 seeded)
+- Dashboard overhaul with per-project cards (level, visibility, equity, tags)
+- Notification drawer in navbar
+- Thread page with TOTP reauth and termsNote
+- QR code on TOTP settings
+- Second seed user: founder2@emoclew.dev / Password123!
+
+Pending verification (do not skip):
+- TOTP enable flow stability after fix
+- OAuth Google + Facebook end to end
+- Full merge happy path with two users
+- Announcement dismissal persistence
+- Project visibility 403 enforcement
+- npm test clean pass
+
+Today's tasks in order:
+1. Verification pass
+2. OAuth Google/Facebook fix and test
+3. Dashboard hover animations and dynamic effects
+4. Merge flow end-to-end test and fix
+5. Community ratification feature (Vote model, 72hr window, quorum, silence rule)
+6. Deployment to production + domain setup
+7. SAFE contract DB record (Level 1+)
+
+Stack: Next.js 15 + React 19 frontend, Node/Express/TypeScript backend, 
+PostgreSQL + Prisma, JWT httpOnly cookies, otplib TOTP.
+No bullshit. No made up answers. Ask before writing code. 
+Production-ready, secure, tested.
+See you tomorrow.

@@ -4,7 +4,14 @@ import { api } from "@/lib/api";
 import { User } from "@/types";
 
 interface MeResponse extends User {
-  projects: { id: string; name: string; currentLevel: number; visibility: string; status: string }[];
+  projects: {
+    id: string;
+    name: string;
+    currentLevel: number;
+    visibility: string;
+    status: string;
+    tags: string[];
+  }[];
 }
 
 export function useUser() {

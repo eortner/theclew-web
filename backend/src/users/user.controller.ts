@@ -16,7 +16,7 @@ export async function getMe(req: Request, res: Response): Promise<void> {
     select: {
       ...safeUser,
       projects: {
-        select: { id: true, name: true, currentLevel: true, visibility: true, status: true },
+        select: { id: true, name: true, currentLevel: true, visibility: true, status: true, tags: true },
         where:  { status: { not: 'ARCHIVED' } },
       },
     },

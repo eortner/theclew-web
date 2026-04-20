@@ -97,6 +97,8 @@ model User {
   messages          Message[]
   mergeParties      MergeParty[]
 
+  dismissals UserDismissal[]
+
   @@index([email])
   @@index([provider, providerId])
 }
@@ -246,6 +248,8 @@ model Thread {
   messages    Message[]
   mergeParties MergeParty[]
 
+  termsNote  String?
+
   @@index([initiatorId])
   @@index([recipientId])
   @@index([status])
@@ -301,4 +305,36 @@ model WaitlistEntry {
 
   userId    String?  @unique
   user      User?    @relation(fields: [userId], references: [id])
+}
+
+// ─────────────────────────────────────────
+// ANNOUNCEMENTS
+// ─────────────────────────────────────────
+
+model Announcement {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  title     String
+  body      String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  dismissals UserDismissal[]
+}
+
+// ─────────────────────────────────────────
+// USER DISMISSAL
+// ─────────────────────────────────────────
+
+model UserDismissal {
+  id              String   @id @default(cuid())
+  announcementKey String
+  dismissedAt     DateTime @default(now())
+
+  userId       String
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  announcement Announcement @relation(fields: [announcementKey], references: [key], onDelete: Cascade)
+
+  @@unique([userId, announcementKey])
+  @@index([userId])
 }

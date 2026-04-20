@@ -1,18 +1,19 @@
 import { Router } from 'express';
 import { requireAuth } from '../middleware/auth.middleware';
+import { requireTotpSetup, requireTotp } from '../middleware/totp.middleware';
 import { proposeEquity, reAuthenticate, confirmMerge, declineMerge } from './merge.controller';
 
 export const mergeRouter = Router();
 mergeRouter.use(requireAuth);
 
-// Propose or update equity split — either party can do this
+// Equity proposal — auth only, no TOTP needed to negotiate
 mergeRouter.patch('/:threadId/equity',  proposeEquity);
 
-// Re-authenticate before final confirmation
-mergeRouter.post('/:threadId/reauth',   reAuthenticate);
+// Re-auth — TOTP must be set up AND freshly verified
+mergeRouter.post('/:threadId/reauth',   requireTotpSetup, requireTotp, reAuthenticate);
 
-// Final confirmation — only allowed after both parties have re-authed
-mergeRouter.post('/:threadId/confirm',  confirmMerge);
+// Final confirm — TOTP must be set up AND freshly verified
+mergeRouter.post('/:threadId/confirm',  requireTotpSetup, requireTotp, confirmMerge);
 
-// Decline the merge at any point
+// Decline — no TOTP needed, this is a rejection not a binding signature
 mergeRouter.post('/:threadId/decline',  declineMerge);

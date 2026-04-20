@@ -10,3 +10,9 @@ export const loginSchema = z.object({
   email:    z.string().email(),
   password: z.string().min(1),
 });
+
+export const loginTotpSchema = z.object({
+  email:     z.string().email(),
+  password:  z.string().min(1),
+  totpToken: z.string().length(6).regex(/^\d{6}$/),
+});

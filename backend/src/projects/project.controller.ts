@@ -24,6 +24,18 @@ export async function createProject(req: Request, res: Response): Promise<void> 
 
   const { name, description, visibility, tags: tagNames } = parsed.data;
 
+  // Add this block inside updateProject, after the ownership check and before the schema parse:
+  if (parsed.data.visibility && ['PUBLIC', 'SELECTIVE'].includes(parsed.data.visibility)) {
+    const freshUser = await prisma.user.findUnique({ where: { id: user.id } });
+    if (!freshUser?.totpEnabled) {
+      res.status(403).json({
+        error:        'Two-factor authentication must be enabled to make a project discoverable',
+        totpRequired: true,
+      });
+      return;
+    }
+  }
+
   try {
     // Validate all tags exist in the curated Tag table
     const foundTags = await prisma.tag.findMany({
@@ -97,6 +109,18 @@ export async function updateProject(req: Request, res: Response): Promise<void> 
   if (!parsed.success) { res.status(400).json({ error: parsed.error.flatten() }); return; }
 
   const { tags: tagNames, ...rest } = parsed.data;
+
+  // Add this block inside updateProject, after the ownership check and before the schema parse:
+  if (parsed.data.visibility && ['PUBLIC', 'SELECTIVE'].includes(parsed.data.visibility)) {
+    const freshUser = await prisma.user.findUnique({ where: { id: user.id } });
+    if (!freshUser?.totpEnabled) {
+      res.status(403).json({
+        error:        'Two-factor authentication must be enabled to make a project discoverable',
+        totpRequired: true,
+      });
+      return;
+    }
+  }
 
   try {
     const updated = await prisma.$transaction(async (tx) => {

@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { ShieldCheck, ShieldOff, Copy, Check } from "lucide-react";
 import { cn } from "@/lib/cn";
+import QRCode from "qrcode";
+import { useEffect, useRef } from "react";
+import { TotpGate } from "@/components/ui/TotpGate";
 
 type Step = "idle" | "setup" | "verify" | "disable";
 
@@ -28,6 +31,26 @@ export default function TotpSettingsPage() {
     setToken("");
     setError("");
     setOtpauthUrl("");
+  }
+
+  function QrCode({ value }: { value: string }) {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+
+    useEffect(() => {
+      if (canvasRef.current) {
+        QRCode.toCanvas(canvasRef.current, value, {
+          width:  200,
+          margin: 2,
+          color:  { dark: "#e8e4dc", light: "#0e0d0b" },
+        });
+      }
+    }, [value]);
+
+    return (
+      <div className="flex justify-center p-4 bg-bg border border-white/[0.07] rounded-xl">
+        <canvas ref={canvasRef} />
+      </div>
+    );
   }
 
   async function handleSetup() {
@@ -120,16 +143,14 @@ export default function TotpSettingsPage() {
         {step === "setup" && (
           <div className="space-y-4">
             <p className="text-sm text-muted">
-              Copy the URI below and paste it into your authenticator app, or use it to add the account manually.
+              Scan the QR code with Google Authenticator, Authy, or any RFC 6238 app.
+              If you cannot scan, copy the URI manually.
             </p>
+            {otpauthUrl && <QrCode value={otpauthUrl} />}
             <div className="relative bg-bg border border-white/[0.07] rounded-lg px-4 py-3">
               <p className="text-xs text-faint font-mono break-all pr-8">{otpauthUrl}</p>
-              <button
-                type="button"
-                onClick={copyToClipboard}
-                className="absolute top-3 right-3 text-muted hover:text-text transition-colors"
-                aria-label="Copy URI"
-              >
+              <button type="button" onClick={copyToClipboard}
+                className="absolute top-3 right-3 text-muted hover:text-text transition-colors" aria-label="Copy URI">
                 {copied ? <Check size={14} className="text-spark" /> : <Copy size={14} />}
               </button>
             </div>
@@ -142,31 +163,33 @@ export default function TotpSettingsPage() {
 
         {/* Step 2 — verify token to enable */}
         {step === "verify" && (
-          <form onSubmit={handleVerify} className="space-y-4">
-            <p className="text-sm text-muted">
-              Enter the 6-digit code from your authenticator app to activate TOTP.
-            </p>
-            <Input
-              label="Authenticator code"
-              value={token}
-              onChange={e => setToken(e.target.value.replace(/\D/g, "").slice(0, 6))}
-              placeholder="000000"
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              required
-            />
-            {error && (
-              <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-2">
-                {error}
+          <TotpGate>
+            <form onSubmit={handleVerify} className="space-y-4">
+              <p className="text-sm text-muted">
+                Enter the 6-digit code from your authenticator app to activate TOTP.
               </p>
-            )}
-            <div className="flex gap-3">
-              <Button type="button" variant="ghost" onClick={reset}>Cancel</Button>
-              <Button type="submit" variant="primary" loading={loading} disabled={token.length !== 6}>
-                Activate
-              </Button>
-            </div>
-          </form>
+              <Input
+                label="Authenticator code"
+                value={token}
+                onChange={e => setToken(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                placeholder="000000"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                required
+              />
+              {error && (
+                <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-2">
+                  {error}
+                </p>
+              )}
+              <div className="flex gap-3">
+                <Button type="button" variant="ghost" onClick={reset}>Cancel</Button>
+                <Button type="submit" variant="primary" loading={loading} disabled={token.length !== 6}>
+                  Activate
+                </Button>
+              </div>
+            </form>
+          </TotpGate>
         )}
 
         {/* Idle — already enabled */}
@@ -184,32 +207,34 @@ export default function TotpSettingsPage() {
 
         {/* Disable flow */}
         {step === "disable" && (
-          <form onSubmit={handleDisable} className="space-y-4">
-            <p className="text-sm text-muted">
-              Enter your current authenticator code to confirm you want to disable TOTP.
-            </p>
-            <Input
-              label="Authenticator code"
-              value={token}
-              onChange={e => setToken(e.target.value.replace(/\D/g, "").slice(0, 6))}
-              placeholder="000000"
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              required
-            />
-            {error && (
-              <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-2">
-                {error}
+          <TotpGate>
+            <form onSubmit={handleDisable} className="space-y-4">
+              <p className="text-sm text-muted">
+                Enter your current authenticator code to confirm you want to disable TOTP.
               </p>
-            )}
-            <div className="flex gap-3">
-              <Button type="button" variant="ghost" onClick={reset}>Cancel</Button>
-              <Button type="submit" loading={loading} disabled={token.length !== 6}
-                className="border border-red-500/30 text-red-400 hover:bg-red-500/10">
-                Disable TOTP
-              </Button>
-            </div>
-          </form>
+              <Input
+                label="Authenticator code"
+                value={token}
+                onChange={e => setToken(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                placeholder="000000"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                required
+              />
+              {error && (
+                <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-2">
+                  {error}
+                </p>
+              )}
+              <div className="flex gap-3">
+                <Button type="button" variant="ghost" onClick={reset}>Cancel</Button>
+                <Button type="submit" loading={loading} disabled={token.length !== 6}
+                  className="border border-red-500/30 text-red-400 hover:bg-red-500/10">
+                  Disable TOTP
+                </Button>
+              </div>
+            </form>
+          </TotpGate>
         )}
 
       </div>

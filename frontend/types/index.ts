@@ -46,6 +46,7 @@ export interface Thread {
   type: string;
   status: string;
   subject: string;
+  termsNote?: string; 
   expiresAt?: string;
   createdAt: string;
   updatedAt: string;

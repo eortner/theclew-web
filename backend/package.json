@@ -16,6 +16,9 @@
     "test:watch": "dotenv -e .env.test jest --watch",
     "test:ci": "dotenv -e .env.test jest --ci --forceExit"
   },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "main": "dist/server.js",
   "dependencies": {
     "@prisma/client": "^5.13.0",

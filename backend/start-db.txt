@@ -1,0 +1,3 @@
+npx prisma migrate deploy
+npx prisma db seed
+npx ts-node scripts/insert-embeddings.ts
