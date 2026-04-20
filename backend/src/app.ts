@@ -33,7 +33,7 @@ app.use(helmet({
 const allowedOrigins = (process.env.FRONTEND_URL ?? 'http://localhost:3000').split(',');
 app.use(cors({
   origin: (origin, cb) => {
-    if (!origin && !isProd) return cb(null, true);
+    if (!origin) return cb(null, true);
     if (origin && allowedOrigins.includes(origin)) return cb(null, true);
     cb(new Error(`CORS: origin ${origin} not allowed`));
   },
