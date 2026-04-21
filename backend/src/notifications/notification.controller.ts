@@ -51,7 +51,7 @@ export async function markRead(req: Request, res: Response): Promise<void> {
     where: { id: req.params.id },
     data:  { read: true },
   });
-  res.status(204).send();
+  res.json({ success: true });
 }
 
 export async function markAllRead(req: Request, res: Response): Promise<void> {
@@ -60,5 +60,5 @@ export async function markAllRead(req: Request, res: Response): Promise<void> {
     where: { userId: user.id, read: false },
     data:  { read: true },
   });
-  res.status(204).send();
+  res.json({ success: true });
 }

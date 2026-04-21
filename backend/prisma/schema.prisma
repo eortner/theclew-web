@@ -31,6 +31,7 @@ enum ProjectStatus {
   ACTIVE
   DORMANT
   ARCHIVED
+  MERGED
 }
 
 enum NotificationType {
@@ -88,7 +89,6 @@ model User {
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 
-  projects          Project[]
   waitlist          WaitlistEntry?
   investments       Investment[]
   notifications     Notification[]
@@ -98,6 +98,10 @@ model User {
   mergeParties      MergeParty[]
 
   dismissals UserDismissal[]
+
+  ownerships     ProjectOwnership[]
+
+  votes      Vote[]
 
   @@index([email])
   @@index([provider, providerId])
@@ -117,9 +121,13 @@ model Project {
   currentLevel Int           @default(0)
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
+  tagline      String?
+  website      String?
+  monthlyRevenue Float?  @default(0)
+  teamSize     Int?      @default(1)
+  pitchDeck    String?
 
-  ownerId      String
-  owner        User          @relation(fields: [ownerId], references: [id])
+  owners       ProjectOwnership[]
 
   projectTags   ProjectTag[]
   levelHistory  LevelHistory[]
@@ -127,7 +135,6 @@ model Project {
   threadsAsInitiatorProject Thread[] @relation("ThreadInitiatorProject")
   threadsAsRecipientProject Thread[] @relation("ThreadRecipientProject")
 
-  @@index([ownerId])
   @@index([visibility])
   @@index([status])
 }
@@ -250,6 +257,8 @@ model Thread {
 
   termsNote  String?
 
+  votes      Vote[]
+
   @@index([initiatorId])
   @@index([recipientId])
   @@index([status])
@@ -305,6 +314,42 @@ model WaitlistEntry {
 
   userId    String?  @unique
   user      User?    @relation(fields: [userId], references: [id])
+}
+
+// ─────────────────────────────────────────
+// PROJECT OWNERSHIP
+// ─────────────────────────────────────────
+
+model ProjectOwnership {
+  id            String   @id @default(cuid())
+  projectId     String
+  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  equityPercent Float
+  role          String   @default("FOUNDER")
+  createdAt     DateTime @default(now())
+
+  @@unique([projectId, userId])
+  @@index([projectId])
+  @@index([userId])
+}
+
+// ─────────────────────────────────────────
+// VOTES
+// ─────────────────────────────────────────
+
+model Vote {
+  id        String   @id @default(cuid())
+  threadId  String
+  thread    Thread   @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  approve   Boolean
+  createdAt DateTime @default(now())
+
+  @@unique([threadId, userId])
+  @@index([threadId])
 }
 
 // ─────────────────────────────────────────

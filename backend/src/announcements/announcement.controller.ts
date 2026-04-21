@@ -31,5 +31,5 @@ export async function dismissAnnouncement(req: Request, res: Response): Promise<
     update: {},
   });
 
-  res.status(204).send();
+  res.json({ success: true });
 }

@@ -1,3 +1,5 @@
 To see all the files: find . -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.prisma" \) | grep -v node_modules | grep -v dist | grep -v .next | sort | xargs cat | xclip -selection clipboard
 
 List the tree: find . -type f | grep -v node_modules | grep -v .git | grep -v dist | grep -v .next | grep -v prisma/migrations | sort | xclip -selection clipboard
+
+npx prisma studio <- this is pretty cool to see the db content

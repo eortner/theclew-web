@@ -40,4 +40,14 @@ export const api = {
     disable: (token: string)       => request<{ message: string }>('/auth/totp/disable',    { method: 'POST', body: JSON.stringify({ token }) }),
     reauth:  (token: string)       => request<{ message: string }>('/auth/totp/reauth',     { method: 'POST', body: JSON.stringify({ token }) }),
   },
+
+  merge: {
+    proposeEquity: (threadId: string, proposedEquity: number) =>
+      request(`/merge/${threadId}/equity`, { method: 'PATCH', body: JSON.stringify({ proposedEquity }) }),
+    reauth:   (threadId: string) => request(`/merge/${threadId}/reauth`,  { method: 'POST', body: '{}' }),
+    confirm:  (threadId: string) => request(`/merge/${threadId}/confirm`, { method: 'POST', body: JSON.stringify({ understood: true }) }),
+    decline:  (threadId: string) => request(`/merge/${threadId}/decline`, { method: 'POST', body: '{}' }),
+    vote:     (threadId: string, approve: boolean) => request(`/merge/${threadId}/vote`, { method: 'POST', body: JSON.stringify({ approve }) }),
+    safe:     (threadId: string) => request(`/merge/${threadId}/safe`),
+  },
 };

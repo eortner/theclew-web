@@ -15,9 +15,15 @@ export async function getMe(req: Request, res: Response): Promise<void> {
     where: { id: user.id },
     select: {
       ...safeUser,
-      projects: {
-        select: { id: true, name: true, currentLevel: true, visibility: true, status: true, tags: true },
-        where:  { status: { not: 'ARCHIVED' } },
+      ownerships: {
+        where: { project: { status: { not: 'ARCHIVED' } } },
+        select: {
+          equityPercent: true,
+          role: true,
+          project: {
+            select: { id: true, name: true, currentLevel: true, visibility: true, status: true, tags: true },
+          },
+        },
       },
     },
   });
@@ -42,5 +48,5 @@ export async function updateMe(req: Request, res: Response): Promise<void> {
 export async function deleteMe(req: Request, res: Response): Promise<void> {
   const user = req.user as User;
   await prisma.user.delete({ where: { id: user.id } });
-  res.status(204).send();
+  res.json({ success: true });
 }

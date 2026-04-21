@@ -17,7 +17,7 @@ const VISIBILITY_META = {
   PUBLIC:    { label: "Public",    icon: Globe, color: "text-spark" },
 };
 
-function ProjectCard({ project }: { project: Project }) {
+function ProjectCard({ project, myEquity }: { project: Project; myEquity: number }) {
   const level = LEVEL_META[project.currentLevel];
   const vis   = VISIBILITY_META[project.visibility];
   const VisIcon = vis.icon;
@@ -69,11 +69,11 @@ function ProjectCard({ project }: { project: Project }) {
       <div className="mt-auto pt-3 border-t border-white/[0.04]">
         <div className="flex items-center justify-between text-[0.6rem] text-faint mb-1.5">
           <span>Equity</span>
-          <span>Emoclew 15% · You 85%</span>
+          <span>Emoclew {100 - myEquity}% · You {myEquity}%</span>
         </div>
         <div className="flex h-1.5 rounded-full overflow-hidden bg-white/[0.05]">
-          <div className="bg-cyan h-full transition-all" style={{ width: "15%" }} />
-          <div className="h-full transition-all" style={{ width: "85%", background: level.color }} />
+          <div className="bg-cyan h-full transition-all" style={{ width: `${100 - myEquity}%` }} />
+          <div className="h-full transition-all" style={{ width: `${myEquity}%`, background: level.color }} />
         </div>
       </div>
     </Link>
@@ -104,7 +104,8 @@ export default function DashboardPage() {
   if (!user) return null;
 
   const u        = user as any;
-  const projects: Project[] = u.projects ?? [];
+  const ownerships = u.ownerships ?? [];
+  const projects: Project[] = ownerships.map((o: any) => o.project);
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -156,8 +157,8 @@ export default function DashboardPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {projects.slice(0, 6).map((p: Project) => (
-              <ProjectCard key={p.id} project={p} />
+            {ownerships.slice(0, 6).map((o: any) => (
+              <ProjectCard key={o.project.id} project={o.project} myEquity={o.equityPercent} />
             ))}
           </div>
         )}

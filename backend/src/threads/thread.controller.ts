@@ -38,8 +38,10 @@ export async function createThread(req: Request, res: Response): Promise<void> {
 
   // For MERGE/ACQUISITION — verify initiator owns the project they claim
   if (initiatorProjectId) {
-    const proj = await prisma.project.findUnique({ where: { id: initiatorProjectId } });
-    if (!proj || proj.ownerId !== user.id) {
+    const ownership = await prisma.projectOwnership.findFirst({
+      where: { projectId: initiatorProjectId, userId: user.id, role: 'FOUNDER' },
+    });
+    if (!ownership) {
       res.status(403).json({ error: 'You do not own that project' });
       return;
     }
