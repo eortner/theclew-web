@@ -640,10 +640,24 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.12 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-function handleSubmit(e) {
+async function handleSubmit(e) {
   e.preventDefault();
-  document.getElementById('waitlistForm').style.display = 'none';
-  document.getElementById('successMsg').style.display = 'block';
+  const email = document.querySelector('#waitlistForm input').value;
+  try {
+    const res = await fetch('https://theclew-web.onrender.com/waitlist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    if (res.ok) {
+      document.getElementById('waitlistForm').style.display = 'none';
+      document.getElementById('successMsg').style.display = 'block';
+    } else {
+      alert('Something went wrong, please try again.');
+    }
+  } catch {
+    alert('Something went wrong, please try again.');
+  }
 }
 
 document.querySelectorAll('a[href^="#"]').forEach(a => {
