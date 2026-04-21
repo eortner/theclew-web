@@ -43,7 +43,7 @@ export async function verifyAndEnableTotp(req: Request, res: Response): Promise<
     return;
   }
 
-  if (!(await verifyToken(token, freshUser.totpSecret))) {
+  if (!(verifyToken(token, freshUser.totpSecret))) {
     res.status(401).json({ error: 'Invalid TOTP token' });
     return;
   }
@@ -72,7 +72,7 @@ export async function disableTotp(req: Request, res: Response): Promise<void> {
     return;
   }
 
-  if (!(await verifyToken(token, freshUser.totpSecret))) {
+  if (!(verifyToken(token, freshUser.totpSecret))) {
     res.status(401).json({ error: 'Invalid TOTP token' });
     return;
   }
@@ -101,7 +101,7 @@ export async function reauthTotp(req: Request, res: Response): Promise<void> {
     return;
   }
 
-  if (!(await verifyToken(token, freshUser.totpSecret))) {
+  if (!(verifyToken(token, freshUser.totpSecret))) {
     res.status(401).json({ error: 'Invalid TOTP token' });
     return;
   }

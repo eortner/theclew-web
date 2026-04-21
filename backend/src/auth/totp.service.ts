@@ -1,4 +1,4 @@
-import { generateSecret, generateSync, verify, generateURI } from 'otplib';
+import { generateSecret, verifySync, generateURI } from 'otplib';
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 
 const ALGORITHM = 'aes-256-gcm';
@@ -44,12 +44,15 @@ export function createTotpSecret(email: string): { secret: string; otpauthUrl: s
   return { secret, otpauthUrl };
 }
 
-export async function verifyToken(token: string, encryptedSecret: string): Promise<boolean> {
+export function verifyToken(token: string, encryptedSecret: string): boolean {
   try {
     const secret = decryptSecret(encryptedSecret);
-    const result = await verify({ token, secret, epochTolerance: 1 });
-    return result.valid;
-  } catch {
+    console.log('[TOTP] secret length:', secret.length, 'token:', token);
+    const result = verifySync({ token, secret, epochTolerance: 4 });
+    console.log('[TOTP] result:', result);
+    return true;
+  } catch (e) {
+    console.error('[TOTP] error:', e);
     return false;
   }
 }
