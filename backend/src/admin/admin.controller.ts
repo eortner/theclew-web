@@ -6,7 +6,7 @@ export async function listUsers(_req: Request, res: Response): Promise<void> {
     select: {
       id: true, email: true, name: true, role: true,
       provider: true, createdAt: true,
-      _count: { select: { projects: true } },
+      _count: { select: { ownerships: true } },
     },
     orderBy: { createdAt: 'desc' },
   });
@@ -18,7 +18,7 @@ export async function listProjects(_req: Request, res: Response): Promise<void> 
     select: {
       id: true, name: true, visibility: true, status: true,
       currentLevel: true, createdAt: true,
-      owner: { select: { id: true, email: true, name: true } },
+      owners: { where: { role: 'FOUNDER' }, select: { user: { select: { id: true, email: true, name: true } } }, take: 1 },
     },
     orderBy: { createdAt: 'desc' },
   });
@@ -36,6 +36,5 @@ export async function getStats(_req: Request, res: Response): Promise<void> {
     }),
     prisma.waitlistEntry.count(),
   ]);
-
   res.json({ totalUsers, totalProjects, byLevel, waitlistCount });
 }
