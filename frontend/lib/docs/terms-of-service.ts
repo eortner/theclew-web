@@ -33,11 +33,11 @@ You may authenticate via email and password, Google OAuth, or Facebook OAuth. Se
       title: 'Platform Subscription and Fees',
       content: `**Level 0 — Ember:** 30-day free exploration period. After 30 days, continued participation requires $11.99/year. No credit card required to begin.
 
-**Level 1 — Spark:** Starts at $250/month. Unlocks developer tools, AI credits, investor access, and project management tools.
+**Level 1 — Spark:** Starts at $11.99/year. Unlocks developer tools, AI credits, investor access, and project management tools.
 
-**Level 2 — Flame:** Starts at $500/month. Unlocks domain and site support, company-building tools, and partner infrastructure.
+**Level 2 — Flame:** We pay $250/month. Unlocks domain and site support, company-building tools, and partner infrastructure.
 
-**Level 3 — Blaze:** Starts at $1,500/month. Unlocks Delaware C-Corp incorporation, US banking, and a debit card delivered to your address.
+**Level 3 — Blaze:** We pay $1,500/month. Unlocks Delaware C-Corp incorporation, US banking, and a debit card delivered to your address.
 
 **Level 4 — Nova:** TBD. Unlocks funding support, exit advisory, M&A guidance, and advanced financial infrastructure.
 
@@ -77,24 +77,6 @@ This equity agreement is consented to at Level 0 signup and is a condition of ac
 **Cooling Period:** After a declined merger vote, a 14-day cooling period applies before the same two projects may attempt to merge again.
 
 **Minimum Founder Equity:** No co-founder may receive less than 5% equity unless explicitly joining as advisor-only, agreed in writing by both parties.`
-    },
-    {
-      title: 'Investor Terms',
-      content: `Investor access opens at Level 1 after at least one verified monthly cycle.
-
-**Investment Structure:** Micro-equity with revenue-based monthly payments. Equity vests proportionally through completed payments — it is not transferred in full at commitment.
-
-**Investment Limits at Level 1:**
-- Maximum total investment: $10,000 combined across all investors
-- Maximum equity per individual investor: 3% per deal
-- Maximum revenue share to all investors: 5% of monthly revenue
-- Repayment multiple: 1.5× before payments cease; equity remains
-
-**Accreditation:** Investors must declare their accreditation status at profile creation. Emoclew does not verify accreditation declarations but relies on investor representations.
-
-**No Broker-Dealer Activity:** Emoclew does not act as a Reg CF funding portal, broker-dealer, or financial intermediary. The platform generates SAFE agreements that founders sign and port independently to registered intermediaries. All capital transactions occur outside Emoclew.
-
-Before any financial features go live on the full platform: all SAFE agreement templates will be reviewed by US securities legal counsel.`
     },
     {
       title: 'User Conduct',
