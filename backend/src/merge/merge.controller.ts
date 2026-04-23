@@ -20,10 +20,10 @@ async function getThreadAsParticipant(threadId: string, userId: string) {
 }
 
 function platformEquityForLevel(level: number): number {
-  if (level >= 4) return 12;
-  if (level >= 3) return 13;
-  if (level >= 2) return 14;
-  return 15;
+  if (level >= 4) return 7;
+  if (level >= 3) return 8;
+  if (level >= 2) return 9;
+  return 10;
 }
 
 export async function proposeEquity(req: Request, res: Response): Promise<void> {

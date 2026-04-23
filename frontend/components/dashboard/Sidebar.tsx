@@ -1,14 +1,15 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, FolderOpen, MessageSquare, Settings } from "lucide-react";
+import { LayoutDashboard, FolderOpen, MessageSquare, BookOpen, Settings } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 const links = [
-  { href: "/dashboard",       label: "Dashboard", icon: LayoutDashboard },
-  { href: "/projects",        label: "Projects",  icon: FolderOpen },
-  { href: "/threads",         label: "Messages",  icon: MessageSquare },
-  { href: "/settings/totp",   label: "Settings",  icon: Settings },
+  { href: "/dashboard",     label: "Dashboard", icon: LayoutDashboard },
+  { href: "/projects",      label: "Projects",  icon: FolderOpen },
+  { href: "/threads",       label: "Messages",  icon: MessageSquare },
+  { href: "/library",       label: "Library",   icon: BookOpen },
+  { href: "/settings/totp", label: "Settings",  icon: Settings },
 ];
 
 export function Sidebar() {

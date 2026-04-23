@@ -96,10 +96,10 @@ export interface Vote {
 }
 
 export const LEVEL_META = [
-  { name: 'Ember', color: '#e85d04', fee: '$10/yr',    unlocks: 'Platform access, Slack community, project creation, tag-driven discovery, co-founder matching' },
-  { name: 'Spark', color: '#f4a261', fee: '$250/mo',   unlocks: 'Dev tools, AI credits, project management tools, investor access opens' },
-  { name: 'Flame', color: '#ffd166', fee: '$500/mo',   unlocks: 'Domain & site support, company-building tools, partner infrastructure' },
-  { name: 'Blaze', color: '#48cae4', fee: '$1,500/mo', unlocks: 'Delaware C-Corp incorporation, US banking, debit card delivered to your door' },
+  { name: 'Ember', color: '#e85d04', fee: '$11.99/yr',    unlocks: 'Platform access, Slack community, project creation, tag-driven discovery, co-founder matching' },
+  { name: 'Spark', color: '#f4a261', fee: '$11.99/yr',   unlocks: 'Dev tools, AI credits, project management tools, investor access opens' },
+  { name: 'Flame', color: '#ffd166', fee: '$0',   unlocks: 'Domain & site support, company-building tools, partner infrastructure' },
+  { name: 'Blaze', color: '#48cae4', fee: '$0', unlocks: 'Delaware C-Corp incorporation, US banking, debit card delivered to your door' },
   { name: 'Nova',  color: '#90e0ef', fee: 'TBD',       unlocks: 'Funding support, exit advisory, M&A guidance, advanced financial infrastructure' },
 ] as const;
 
@@ -112,8 +112,8 @@ export const TAG_CATEGORY_LABELS: Record<string, string> = {
 };
 
 export function platformEquityForLevel(level: number): number {
-  if (level >= 4) return 12;
-  if (level >= 3) return 13;
-  if (level >= 2) return 14;
-  return 15;
+  if (level >= 4) return 7;
+  if (level >= 3) return 8;
+  if (level >= 2) return 9;
+  return 10;
 }

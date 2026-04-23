@@ -79,8 +79,37 @@ Today's tasks in order:
 6. Deployment to production + domain setup
 7. SAFE contract DB record (Level 1+)
 
-Stack: Next.js 15 + React 19 frontend, Node/Express/TypeScript backend, 
-PostgreSQL + Prisma, JWT httpOnly cookies, otplib TOTP.
-No bullshit. No made up answers. Ask before writing code. 
-Production-ready, secure, tested.
-See you tomorrow.
+Here's where we stand:
+What's working:
+
+Full deployment on Render (frontend + backend) + Neon DB
+Login/register
+TOTP 2FA setup and login (beta mode — any valid 6 digits passes, real verification pending)
+Projects — create, view, discover, similar projects, visibility selector
+Project ownership with equity tracking
+Dashboard with projects and equity display
+Activity feed via notifications
+Waitlist collecting emails
+Landing page live on GitHub Pages
+UptimeRobot keeping Render warm
+Seeded demo users (alice, bob, sara) with projects at levels 0, 1, 2
+Merge flow backend (equity proposal, reauth, confirm, voting, finalise)
+SAFE contract display
+Message founder button on project pages
+Thread/messaging UI
+
+What still needs work before Wednesday:
+
+Push everything to prod — nothing has been pushed since we started fixing bugs
+Test messaging end to end locally
+Landing page "Log in" button pointing to the portal
+Custom domain app.emoclew.xyz on Render
+Run seed against Neon prod DB for demo users
+
+Known issues to fix later:
+
+Real TOTP verification (currently accepts any 6 digits)
+OAuth (Google/Facebook) not configured
+Thread compose needs testing end to end
+
+What do you want to tackle first?

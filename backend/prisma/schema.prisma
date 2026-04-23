@@ -65,6 +65,7 @@ enum ThreadStatus {
 
 enum MergePartyStatus {
   PENDING
+  PROPOSED
   REAUTHED
   CONFIRMED
   DECLINED

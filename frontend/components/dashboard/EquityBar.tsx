@@ -12,7 +12,7 @@ interface Props {
   onPropose?: (founderPct: number) => void;
 }
 
-export function EquityBar({ emoclewPct = 15, founderPct = 85, investorPct = 0, interactive, onPropose }: Props) {
+export function EquityBar({ emoclewPct = 10, founderPct = 90, investorPct = 0, interactive, onPropose }: Props) {
   const [proposedFounder, setProposedFounder] = useState(founderPct - investorPct);
 
   const segments: Segment[] = [
